@@ -1,0 +1,35 @@
+
+Resumen Paper Practical Byzantine Fault Tolerance 
+
+			       Nicole Caballero 
+
+
+Actualmente en la industria se ha desarrollado una fuerte dependencia de los servicios de información, por lo que los ataques maliciosos con consecuencias graves son cada vez más recurrentes y peligrosos. Por lo demás, los sistemas distribuidos se han posicionado como el mecanismo principal de soporte de muchos servicios ya que el software ha aumentado significativamente y por consiguiente han aumentado los errores asociados a este. 
+En el texto se presenta un nuevo algoritmo para replicación de maquinas de estado que es tolerante a fallos bizantinos, un fallo bizantino ocurre cuando uno o más componentes han fallado y no hay información precisa sobre la falla de un componente o si la información del sistema es correcta. Este algoritmo ofrece seguridad y capacidad y demuestra un mejor rendimiento frente a algoritmos similares. 
+
+La mayoría de los algoritmos propuestos anteriormente refieren a técnicas que solo buscan demostrar viabilidad desde el punto de vista técnico y en la práctica no pueden ser implementados de manera eficiente o que asumen sincronía de los procesos y se basan directamente en la velocidad de los mensajes y los retrasos que podrían tener estos. Lo cual es un punto débil frente a los ataques maliciosos ya que el adversario puede generar ataques de tipo, coordinar nodos defectuosos, retrasar comunicación o retrasar nodos correctos para causar el mayor daño posible. En este sentido, el algoritmo presentado asume un sistema distribuido asíncrono donde los nodos están conectados por una red, la red puede fallar, tener retraso, duplicar mensajes o enviarlos en desorden. Se asume que las fallas de los nodos son independientes. 
+Es decir, cada nodo debe correr implementaciones distintas del código y utilizar sistemas con diferentes contraseñas de raíz o diferente administrador.  
+
+Por otro lado, el algoritmo utiliza criptografía para prevenir la suplantación de identidad y para detectar mensajes corruptos. Las técnicas criptográficas utilizadas no permiten que el atacante o adversario produzca firmas válidas de nodos no defectuosos o que calcule la información resumida por un compendio de nodos. 
+Una modificación importante es que las firmas de todos los mensajes se sustituyen por vectores MAC a los cuales se les llama autentificadores. El tiempo de verificar un autentificador es constante y solo crece con el número de replicas, esto no es un problema porque el algoritmo siempre acota las réplicas y en la práctica los autentificadores son más rápidos que las firmas digitales. 
+En el caso de los servicios que se pueden implementar con el algoritmo estos pueden ser de cualquier tipo, pero deben cumplir con dos condiciones, debe ser determinista y admitir operaciones, en este sentido, las operaciones pueden ser muy variadas y no solo de lectura y escritura. Ademas se asume que el servicio satisface linealidad, esto quiere decir que todas sus operaciones se comportan de manera centralizada y atómica. 
+En términos prácticos esto implica que todas las operaciones realizadas por clientes defectuosos son observadas de forma coherente por los clientes no defectuosos. Se limita el daño que puede hacer un cliente proporcionando un control de acceso, con autenticación y restricción a invocar operaciones.
+
+A continuación, se describe de manera resumida como funciona el algoritmo y algunas acotaciones importantes respecto a su implementación.
+El algoritmo propuesto es una forma de replicación de máquinas de estado, este se modela como una máquina de estado que se replica en diferentes nodos de un sistema distribuido. 
+Las réplicas se mueven a través de una sucesión de configuraciones llamadas vistas 
+El algoritmo consta de los siguientes pasos:
+1.	Un cliente envía una solicitud para invocar una operación de servicio primario.
+2.	El primario multiplica la solicitud a las copias de seguridad 
+3.	Las réplicas ejecutan la solicitud y envían una respuesta al cliente 
+4.	El cliente espera f + 1 respuestas de diferentes replicas con el mismo resultado, este es el resultado de la operación. F es el número de replicas defectuosas.
+ 
+Una acotación importante es que todas las réplicas deben ser deterministas y deben comenzar en el mismo estado. 
+
+El algoritmo propone una nueva forma de descartar mensajes defectuosos en el registro, ya que las réplicas necesitan una prueba de que el estado es el correcto. Estas pruebas se generan periódicamente y se llaman puntos de control, un punto de control es estable si tiene pruebas validadas por todas las réplicas. 
+
+Otra acotación importante es que el algoritmo no asume sincronía para proporcionar seguridad, pero si debe usarla para la capacidad de respuesta, puesto que en la práctica es imposible implementar concesos en sistemas asíncronos. La suposición es que el cliente terminara recibiendo el mensaje en un tiempo finito. 
+Ademas, el algoritmo no aborda el problema de la privacidad frente a fallos, ya que es posible que una réplica defectuosa filtre información al atacante. Sin embargo, si es posible acotar el nivel de filtración bajo un umbral definido por el nivel de replicas maliciosas, los alcances de este problema son materia de próximas investigaciones. 
+Respecto a las optimizaciones que implementa el algoritmo son tres principalmente, la retransmisión de la solicitud a las réplicas que envían respuestas completas. La segunda tiene que ver con reducir el retraso de los mensajes y la tercera mejora el rendimiento de las operaciones de lectura que no modifican el estado del servicio. 
+
+Las métricas utilizadas fueron principalmente dos, una micro prueba y la prueba Andrew. La primera de estas proporciona una evaluación independiente del rendimiento de la biblioteca de replicación, esta mide la latencia presente para invocar una operación nula. En el caso de la prueba de Andrew, esta compara el algoritmo con otros dos sistemas de archivos, NFS V2 en Digital Unix y otro algoritmo que no utiliza replicación. Ademas evalúa la sobrecarga del algoritmo dentro de una implementación de servicio real. En este sentido, el algoritmo fue probado en sistema de NFS y muestra ser tolerante a fallos bizantinos y siendo solo un 3% más lento que un NFS estándar sin replicar.
