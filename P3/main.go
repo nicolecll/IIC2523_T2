@@ -51,9 +51,7 @@ func returnSingleProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
 
-	// Loop over all of our Articles
-	// if the article.Id equals the key we pass in
-	// return the article encoded as JSON
+
 	for _, producto := range Productos {
 		if producto.Id == key {
 			json.NewEncoder(w).Encode(producto)
@@ -62,14 +60,10 @@ func returnSingleProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func createNewProduct(w http.ResponseWriter, r *http.Request) {
-	// get the body of our POST request
-	// unmarshal this into a new Article struct
-	// append this to our Articles array.
+
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var producto Producto
 	json.Unmarshal(reqBody, &producto)
-	// update our global Articles array to include
-	// our new Article
 	Productos = append(Productos, producto)
 
 	json.NewEncoder(w).Encode(producto)
@@ -78,17 +72,10 @@ func createNewProduct(w http.ResponseWriter, r *http.Request) {
 func deleteProduct(w http.ResponseWriter, r *http.Request) {
 	// once again, we will need to parse the path parameters
 	vars := mux.Vars(r)
-	// we will need to extract the `id` of the article we
-	// wish to delete
 	id := vars["id"]
 
-	// we then need to loop through all our articles
 	for index, producto := range Productos {
-		// if our id path parameter matches one of our
-		// articles
 		if producto.Id == id {
-			// updates our Articles array to remove the
-			// article
 			Productos = append(Productos[:index], Productos[index+1:]...)
 		}
 	}
@@ -122,7 +109,5 @@ type Producto struct {
 	Expiracion  string `json:"expiracion"`
 }
 
-// let's declare a global Articles array
-// that we can then populate in our main function
-// to simulate a database
+
 var Productos []Producto
