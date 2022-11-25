@@ -1,7 +1,6 @@
 
 Resumen Paper Practical Byzantine Fault Tolerance 
 
-			       Nicole Caballero 
 
 
 Actualmente en la industria se ha desarrollado una fuerte dependencia de los servicios de información, por lo que los ataques maliciosos con consecuencias graves son cada vez más recurrentes y peligrosos. Por lo demás, los sistemas distribuidos se han posicionado como el mecanismo principal de soporte de muchos servicios ya que el software ha aumentado significativamente y por consiguiente han aumentado los errores asociados a este. 
